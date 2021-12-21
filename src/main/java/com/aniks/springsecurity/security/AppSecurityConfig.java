@@ -12,6 +12,8 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests() // authorise requests
+                .antMatchers("/", "index", "/css/*", "/js/*") //    whitelists url paths that don't need authorisation
+                .permitAll() // permitting the non-authorisation of antMatchers
                 .anyRequest() // applies to any request
                 .authenticated() // client must authenticate by supplying username and password
                 .and() //
