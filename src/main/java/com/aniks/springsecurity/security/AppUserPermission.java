@@ -1,5 +1,9 @@
 package com.aniks.springsecurity.security;
 
+import org.springframework.security.core.GrantedAuthority;
+
+import java.util.Set;
+
 public enum AppUserPermission {
     STUDENT_READ("student:read"),
     STUDENT_WRITE("student:write"),
@@ -15,4 +19,6 @@ public enum AppUserPermission {
     public String getPermission() {
         return permission;
     }
+
+
 }
