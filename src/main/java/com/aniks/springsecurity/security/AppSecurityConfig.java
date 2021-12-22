@@ -12,6 +12,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
+import static com.aniks.springsecurity.security.AppUserRole.*;
+
 @Configuration
 @EnableWebSecurity
 public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
@@ -27,8 +29,8 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests() // authorise requests
-                .antMatchers("/", "index", "/css/*", "/js/*") //    whitelists url paths that don't need authorisation
-                .permitAll() // permitting the non-authorisation of antMatchers
+                .antMatchers("/", "index", "/css/*", "/js/*").permitAll() //    whitelists url paths that don't need authorisation // permitting the non-authorisation of antMatchers
+                .antMatchers("/api/**").hasRole(STUDENT.name()) //  using role-based authentication to protect api
                 .anyRequest() // applies to any request
                 .authenticated() // client must authenticate by supplying username and password
                 .and() //
@@ -41,9 +43,15 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
         UserDetails fabioUser = User.builder()
                 .username("fabio")
                 .password(passwordEncoder.encode("12345"))
-                .roles("STUDENT") //    spring identifies this as ROLE_STUDENT
+                .roles(STUDENT.name()) //    spring identifies this as ROLE_STUDENT
                 .build();
 
-        return new InMemoryUserDetailsManager(fabioUser);
+        UserDetails goodnessUser = User.builder()
+                .username("goodness")
+                .password(passwordEncoder.encode("12345"))
+                .roles(ADMIN.name())
+                .build();
+
+        return new InMemoryUserDetailsManager(fabioUser, goodnessUser);
     }
 }
