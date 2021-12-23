@@ -36,10 +36,6 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests() // authorise requests
                 .antMatchers("/", "index", "/css/*", "/js/*").permitAll() //    whitelists url paths that don't need authorisation // permitting the non-authorisation of antMatchers
                 .antMatchers("/api/**").hasRole(STUDENT.name()) //  using role-based authentication to protect api
-//                .antMatchers(HttpMethod.DELETE, "/management/**").hasAnyAuthority(COURSE_WRITE.getPermission(), STUDENT_WRITE.getPermission())
-//                .antMatchers(HttpMethod.PUT, "/management/**").hasAnyAuthority(COURSE_WRITE.getPermission(), STUDENT_WRITE.getPermission())
-//                .antMatchers(HttpMethod.POST, "/management/**").hasAnyAuthority(COURSE_WRITE.getPermission(), STUDENT_WRITE.getPermission())
-//                .antMatchers(HttpMethod.GET, "/management/**").hasAnyRole(ADMIN.name(), ADMINTRAINEE.name())
                 .anyRequest() // applies to any request
                 .authenticated() // client must authenticate by supplying username and password
                 .and() //
