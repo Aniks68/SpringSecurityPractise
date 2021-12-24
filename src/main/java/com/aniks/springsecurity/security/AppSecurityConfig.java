@@ -32,14 +32,13 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
                 .authorizeRequests() // authorise requests
                 .antMatchers("/", "index", "/css/*", "/js/*").permitAll() //    whitelists url paths that don't need authorisation // permitting the non-authorisation of antMatchers
                 .antMatchers("/api/**").hasRole(STUDENT.name()) //  using role-based authentication to protect api
                 .anyRequest() // applies to any request
                 .authenticated() // client must authenticate by supplying username and password
                 .and() //
-                .httpBasic(); //    the form of enforcing the authencity is by basic auth.
+                .httpBasic(); //    the form of enforcing the authenticity is by basic auth.
     }
 
     @Override
