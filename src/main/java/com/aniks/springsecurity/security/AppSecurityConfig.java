@@ -3,7 +3,6 @@ package com.aniks.springsecurity.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -14,7 +13,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfFilter;
 
 import static com.aniks.springsecurity.security.AppUserPermission.*;
 import static com.aniks.springsecurity.security.AppUserRole.*;
@@ -34,15 +32,17 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .and()
+//                .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+//                .and()
+                .csrf().disable()
                 .authorizeRequests() // authorise requests
                 .antMatchers("/", "index", "/css/*", "/js/*").permitAll() //    whitelists url paths that don't need authorisation // permitting the non-authorisation of antMatchers
                 .antMatchers("/api/**").hasRole(STUDENT.name()) //  using role-based authentication to protect api
                 .anyRequest() // applies to any request
                 .authenticated() // client must authenticate by supplying username and password
-                .and() //
-                .httpBasic(); //    the form of enforcing the authenticity is by basic auth.
+                .and()
+                .formLogin();
+//                .httpBasic(); //    the form of enforcing the authenticity is by basic auth.
     }
 
     @Override
@@ -63,7 +63,7 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
                 .build();
 
         UserDetails izuUser = User.builder()
-                .username("izuchukwu")
+                .username("izu")
                 .password(passwordEncoder.encode("12345"))
 //                .roles(ADMINTRAINEE.name())
                 .authorities(ADMINTRAINEE.getGrantedAuthorities())
