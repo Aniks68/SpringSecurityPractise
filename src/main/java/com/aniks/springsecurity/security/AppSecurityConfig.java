@@ -42,7 +42,8 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticated() // client must authenticate by supplying username and password
                 .and()
                 .formLogin()
-                .loginPage("/login");
+                .loginPage("/login").permitAll()
+                .defaultSuccessUrl("/courses", true);
 //                .httpBasic(); //    the form of enforcing the authenticity is by basic auth.
     }
 
