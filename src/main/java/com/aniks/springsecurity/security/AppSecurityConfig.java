@@ -41,10 +41,12 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest() // applies to any request
                 .authenticated() // client must authenticate by supplying username and password
                 .and()
+//                .httpBasic(); //    the form of enforcing the authenticity is by basic auth.
                 .formLogin()
                 .loginPage("/login").permitAll()
-                .defaultSuccessUrl("/courses", true);
-//                .httpBasic(); //    the form of enforcing the authenticity is by basic auth.
+                .defaultSuccessUrl("/courses", true)
+                .and()
+                .rememberMe(); //   defaults sessionId validity to 2 weeks from 30 minutes of inactivity
     }
 
     @Override
