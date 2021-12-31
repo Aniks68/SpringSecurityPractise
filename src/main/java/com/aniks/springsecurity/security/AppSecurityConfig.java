@@ -1,23 +1,20 @@
 package com.aniks.springsecurity.security;
 
+import com.aniks.springsecurity.auth.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.util.concurrent.TimeUnit;
 
-import static com.aniks.springsecurity.security.AppUserPermission.*;
 import static com.aniks.springsecurity.security.AppUserRole.*;
 
 @Configuration
@@ -25,10 +22,12 @@ import static com.aniks.springsecurity.security.AppUserRole.*;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
     private final PasswordEncoder passwordEncoder;
+    private final AppUserService appUserService;
 
     @Autowired
-    public AppSecurityConfig(PasswordEncoder passwordEncoder) {
+    public AppSecurityConfig(PasswordEncoder passwordEncoder, AppUserService appUserService) {
         this.passwordEncoder = passwordEncoder;
+        this.appUserService = appUserService;
     }
 
 
@@ -68,29 +67,43 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    @Bean /*    A bean of UserDetailsService is necessary for a number of reasons in spring security, one of which is for sessionId/remember-me     */
-    protected UserDetailsService userDetailsService() {
-        UserDetails fabioUser = User.builder()
-                .username("fabio")
-                .password(passwordEncoder.encode("12345"))
-//                .roles(STUDENT.name()) //    spring identifies this as ROLE_STUDENT
-                .authorities(STUDENT.getGrantedAuthorities())
-                .build();
-
-        UserDetails goodnessUser = User.builder()
-                .username("goodness")
-                .password(passwordEncoder.encode("12345"))
-//                .roles(ADMIN.name())
-                .authorities(ADMIN.getGrantedAuthorities())
-                .build();
-
-        UserDetails izuUser = User.builder()
-                .username("izu")
-                .password(passwordEncoder.encode("12345"))
-//                .roles(ADMINTRAINEE.name())
-                .authorities(ADMINTRAINEE.getGrantedAuthorities())
-                .build();
-
-        return new InMemoryUserDetailsManager(fabioUser, goodnessUser, izuUser);
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(daoAuthenticationProvider());
     }
+
+    @Bean
+    public DaoAuthenticationProvider daoAuthenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setPasswordEncoder(passwordEncoder);
+        provider.setUserDetailsService(appUserService);
+
+        return provider;
+    }
+
+//    @Override
+//    @Bean /*    A bean of UserDetailsService is necessary for a number of reasons in spring security, one of which is for sessionId/remember-me     */
+//    protected UserDetailsService userDetailsService() {
+//        UserDetails fabioUser = User.builder()
+//                .username("fabio")
+//                .password(passwordEncoder.encode("12345"))
+////                .roles(STUDENT.name()) //    spring identifies this as ROLE_STUDENT
+//                .authorities(STUDENT.getGrantedAuthorities())
+//                .build();
+//
+//        UserDetails goodnessUser = User.builder()
+//                .username("goodness")
+//                .password(passwordEncoder.encode("12345"))
+////                .roles(ADMIN.name())
+//                .authorities(ADMIN.getGrantedAuthorities())
+//                .build();
+//
+//        UserDetails izuUser = User.builder()
+//                .username("izu")
+//                .password(passwordEncoder.encode("12345"))
+////                .roles(ADMINTRAINEE.name())
+//                .authorities(ADMINTRAINEE.getGrantedAuthorities())
+//                .build();
+//
+//        return new InMemoryUserDetailsManager(fabioUser, goodnessUser, izuUser);
+//    }
 }
