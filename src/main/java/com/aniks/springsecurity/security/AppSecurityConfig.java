@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.util.concurrent.TimeUnit;
 
@@ -45,15 +46,20 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
 //                .httpBasic(); //    the form of enforcing the authenticity is by basic auth.
                 .formLogin()
-                .loginPage("/login").permitAll()
-                .defaultSuccessUrl("/courses", true)
+                    .loginPage("/login")
+                    .permitAll()
+                    .defaultSuccessUrl("/courses", true)
+                    .passwordParameter("password")
+                    .usernameParameter("username")
                 .and()
                 .rememberMe()
                     .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(21))
                     .key("shinigami")
+                    .rememberMeParameter("remember-me")
                 .and()
                 .logout()
                     .logoutUrl("/logout")
+                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET")) //   by default, the logout url is to be activated by a POST request, unless CSRF is disabled where this line of code has to come into play.
                     .clearAuthentication(true)
                     .invalidateHttpSession(true)
                     .deleteCookies("JSESSIONID", "remember-me")
@@ -62,7 +68,7 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    @Bean
+    @Bean /*    A bean of UserDetailsService is necessary for a number of reasons in spring security, one of which is for sessionId/remember-me     */
     protected UserDetailsService userDetailsService() {
         UserDetails fabioUser = User.builder()
                 .username("fabio")
