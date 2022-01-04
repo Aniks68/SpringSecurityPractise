@@ -1,6 +1,7 @@
 package com.aniks.springsecurity.security;
 
 import com.aniks.springsecurity.auth.AppUserService;
+import com.aniks.springsecurity.jwt.JwtTokenVerifier;
 import com.aniks.springsecurity.jwt.JwtUsernameAndPasswordAuthFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -42,6 +43,7 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .addFilter(new JwtUsernameAndPasswordAuthFilter(authenticationManager())) //    we can access the authenticationManager because this class extends WebSecurityConfigurerAdapter
+                .addFilterAfter(new JwtTokenVerifier(), JwtUsernameAndPasswordAuthFilter.class)
                 .authorizeRequests() // authorise requests
                 .antMatchers("/", "index", "/css/*", "/js/*").permitAll() //    whitelists url paths that don't need authorisation // permitting the non-authorisation of antMatchers
                 .antMatchers("/api/**").hasRole(STUDENT.name()) //  using role-based authentication to protect api
