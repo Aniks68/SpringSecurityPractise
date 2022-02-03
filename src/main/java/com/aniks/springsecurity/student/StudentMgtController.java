@@ -19,8 +19,8 @@ public class StudentMgtController {
     );
 
 //  These are used with @PreAuthorize annotation through the use of the following keys:    hasRole('ROLE_')  hasAnyRole('ROLE_', 'ROLE_')    hasAuthority('permission')  hasAnyAuthority('permission', 'permission')
-    @GetMapping
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ADMINTRAINEE')")
+    @GetMapping
     public List<Student> getAllStudents() {
         return STUDENTS;
     }
@@ -34,7 +34,7 @@ public class StudentMgtController {
     @PutMapping(path = "{id}")
     @PreAuthorize("hasAuthority('student:write')")
     public void updateStudent(@PathVariable(value = "id") Integer id, Student student) {
-        System.out.println(String.format("%s %s", id, student));
+        System.out.printf("%s %s%n", id, student);
     }
 
     @DeleteMapping(path = "{id}")

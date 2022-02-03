@@ -44,6 +44,7 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
 //                .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 //                .and()
                 .csrf().disable()
+                //  below line instructs spring security not to manage sessions since the point of using jwt is to maintain a stateless system
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .addFilter(new JwtUsernameAndPasswordAuthFilter(authenticationManager(), jwtConfig, secretKey)) //    we can access the authenticationManager because this class extends WebSecurityConfigurerAdapter
